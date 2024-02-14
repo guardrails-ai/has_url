@@ -39,8 +39,8 @@ guard = Guard.use(
     HasUrl
 )
 
-guard.validate("pass")  # Validator passes
-guard.validate("fail")  # Validator fails
+guard.validate("guardrailsai.com")  # Validator passes
+guard.validate("https://not-a-url")  # Validator fails
 ```
 
 ## Validating JSON output via Python
@@ -57,9 +57,9 @@ from guardrails import Guard
 val = HasUrl()
 
 # Create Pydantic BaseModel
-class Process(BaseModel):
-		process_name: str
-		status: str = Field(validators=[val])
+class LlmInteraction(BaseModel):
+		prompt: str
+		response: str = Field(validators=[val])
 
 # Create a Guard to check for valid Pydantic output
 guard = Guard.from_pydantic(output_class=Process)
@@ -67,8 +67,8 @@ guard = Guard.from_pydantic(output_class=Process)
 # Run LLM output generating JSON through guard
 guard.parse("""
 {
-		"process_name": "templating",
-		"status": "pass"
+		"prompt": "Can you find the Guardrails docs for me?",
+		"response": "Sure! Here's the link to the Guardrails docs: https://guardrailsai.com/docs"
 }
 """)
 ```
@@ -80,8 +80,6 @@ guard.parse("""
 Initializes a new instance of the HasUrl class.
 
 **Parameters**
-- **`arg_1`** *(str)*: A placeholder argument to demonstrate how to use init arguments.
-- **`arg_2`** *(str)*: Another placeholder argument to demonstrate how to use init arguments.
 - **`on_fail`** *(str, Callable)*: The policy to enact when a validator fails.  If `str`, must be one of `reask`, `fix`, `filter`, `refrain`, `noop`, `exception` or `fix_reask`. Otherwise, must be a function that is called when the validator fails.
 </ul>
 <br/>
@@ -97,10 +95,4 @@ Note:
 
 **Parameters**
 - **`value`** *(Any):* The input value to validate.
-- **`metadata`** *(dict):* A dictionary containing metadata required for validation. Keys and values must match the expectations of this validator.
-    
-    
-    | Key | Type | Description | Default |
-    | --- | --- | --- | --- |
-    | key1 | String | Description of key1's role. | N/A |
 </ul>

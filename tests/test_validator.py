@@ -39,8 +39,7 @@ def test_fail():
     Sure!
     Here's the link to the Guardrails docs:
     this is not a url but it has some components like https://
-    and maybe even a domain name like guardrailsai 
-    then some spaces and then .com
+    and maybe even an invalid domain name like https://not-a-url .com
     """
     guard.parse(test_output)
   
