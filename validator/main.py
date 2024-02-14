@@ -1,4 +1,6 @@
-from typing import Any, Callable, Dict, Optional
+import re
+from string import Template
+from typing import Dict
 
 from guardrails.validator_base import (
     FailResult,
@@ -9,40 +11,43 @@ from guardrails.validator_base import (
 )
 
 
-@register_validator(name="guardrails/validator_template", data_type="string")
-class ValidatorTemplate(Validator):
-    """Validates that {fill in how you validator interacts with the passed value}.
+@register_validator(name="guardrails/has_url", data_type="string")
+class HasUrl(Validator):
+    """Validates that a agenerated output contains a url.
 
     **Key Properties**
 
     | Property                      | Description                       |
     | ----------------------------- | --------------------------------- |
-    | Name for `format` attribute   | `guardrails/validator_template`   |
+    | Name for `format` attribute   | `guardrails/has_url`              |
     | Supported data types          | `string`                          |
-    | Programmatic fix              | {If you support programmatic fixes, explain it here. Otherwise `None`} |
-
-    Args:
-        arg_1 (string): {Description of the argument here}
-        arg_2 (string): {Description of the argument here}
+    | Programmatic fix              | None                              |
     """  # noqa
 
-    # If you don't have any init args, you can omit the __init__ method.
-    def __init__(
-        self,
-        arg_1: str,
-        arg_2: str,
-        on_fail: Optional[Callable] = None,
-    ):
-        super().__init__(on_fail=on_fail, arg_1=arg_1, arg_2=arg_2)
-        self._arg_1 = arg_1
-        self._arg_2 = arg_2
-
-    def validate(self, value: Any, metadata: Dict) -> ValidationResult:
-        """Validates that {fill in how you validator interacts with the passed value}."""
+    def validate(self, value: str, metadata: Dict) -> ValidationResult:
+        """Validates that the given value contains a url."""
         # Add your custom validator logic here and return a PassResult or FailResult accordingly.
-        if value != "pass": # FIXME
+        
+        protocol = "https?://"
+        domain_labels = "(?:[a-z0-9\-]+[.]){1,127}"
+        top_level_domain = "[a-z]{2,63}"
+        regex_template = Template(
+            "(?i)\\b((?:${protocol}|${domain_labels}${top_level_domain}/?)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+            )
+        regex_string = regex_template.safe_substitute(
+                protocol=protocol,
+                domain_labels=domain_labels,
+                top_level_domain=top_level_domain
+            )
+        print("regex_string: ", regex_string)
+        
+        regex = re.compile(regex_string)
+        containsUrl = regex.search(
+            value
+        )
+        
+        if not containsUrl:
             return FailResult(
-                error_message="{A descriptive but concise error message about why validation failed}",
-                fix_value="{The programmtic fix if applicable, otherwise remove this kwarg.}",
+                error_message=f"{value} must contain a url!"
             )
         return PassResult()

@@ -3,16 +3,31 @@
 
 from guardrails import Guard
 import pytest
-from validator import ValidatorTemplate
+from validator import HasUrl
 
 # We use 'exception' as the validator's fail action,
 #  so we expect failures to always raise an Exception
 # Learn more about corrective actions here:
 #  https://www.guardrailsai.com/docs/concepts/output/#%EF%B8%8F-specifying-corrective-actions
-guard = Guard.from_string(validators=[ValidatorTemplate(arg_1="arg_1", arg_2="arg_2", on_fail="exception")])
+guard = Guard.from_string(validators=[HasUrl(on_fail="exception")])
 
-def test_pass():
-  test_output = "pass"
+@pytest.mark.parametrize(
+  "url",
+  [
+    ("https://www.guardrailsai.com/docs"),
+    ("www.guardrailsai.com/docs"),
+    ("guardrailsai.com/docs"),
+    ("guardrailsai.com"),
+    ("docs.guardrailsai.com"),
+    ("https://docs.guardrailsai.com")
+  ]
+)
+def test_pass(url):
+  test_output = f"""
+  Sure!
+  Here's the link to the Guardrails docs:
+  {url}
+  """
   result = guard.parse(test_output)
   
   assert result.validation_passed is True
@@ -20,8 +35,14 @@ def test_pass():
 
 def test_fail():
   with pytest.raises(Exception) as exc_info:
-    test_output = "fail"
+    test_output = """
+    Sure!
+    Here's the link to the Guardrails docs:
+    this is not a url but it has some components like https://
+    and maybe even a domain name like guardrailsai 
+    then some spaces and then .com
+    """
     guard.parse(test_output)
   
   # Assert the exception has your error_message
-  assert str(exc_info.value) == "Validation failed for field with errors: {A descriptive but concise error message about why validation failed}"
+  assert str(exc_info.value) == f"Validation failed for field with errors: {test_output} must contain a url!"
