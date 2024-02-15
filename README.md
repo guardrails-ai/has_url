@@ -1,21 +1,19 @@
-# Overview
+## Overview
 
 | Developed by | Guardrails AI |
+| --- | --- |
 | Date of development | Feb 15, 2024 |
 | Validator type | Format |
 | Blog |  |
 | License | Apache 2 |
 | Input/Output | Output |
 
-# Description
-
-## Intended Use
+## Description
 This validator ensures that a generated output contains a url.
 
 ## Requirements
 
-* Dependencies:
-	- guardrails-ai>=0.4.0
+* Dependencies: None
 
 # Installation
 
