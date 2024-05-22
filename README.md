@@ -12,7 +12,7 @@
 ### Intended Use
 This validator ensures that a generated output contains a url.
 
-## Requirements
+### Requirements
 
 * Dependencies:
 	- guardrails-ai>=0.4.0
@@ -23,7 +23,7 @@ This validator ensures that a generated output contains a url.
 $ guardrails hub install hub://guardrails/has_url
 ```
 
-# Usage Examples
+## Usage Examples
 
 ### Validating string output via Python
 
@@ -86,7 +86,7 @@ Initializes a new instance of the HasUrl class.
 </ul>
 <br/>
 
-**`validate(self, value, metadata) → ValidationResult`**
+**`validate(self, value, metadata) -> ValidationResult`**
 <ul>
 Validates the given `value` using the rules defined in this validator, relying on the `metadata` provided to customize the validation process. This method is automatically invoked by `guard.parse(...)`, ensuring the validation logic is applied to the input data.
 
@@ -97,4 +97,5 @@ Note:
 
 **Parameters**
 - **`value`** *(Any)*: The input value to validate.
+
 </ul>
